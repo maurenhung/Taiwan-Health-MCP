@@ -26,8 +26,8 @@
 
 ```bash
 # 1. Clone 專案
-git clone https://github.com/yourusername/Taiwan-ICD10-Health-MCP.git
-cd Taiwan-ICD10-Health-MCP
+git clone https://github.com/audi0417/Taiwan-Health-MCP.git
+cd Taiwan-Health-MCP
 
 # 2. 安裝相依套件
 pip install -r requirements.txt
@@ -366,7 +366,7 @@ Taiwan-ICD10-Health-MCP/
 
 ## 📞 聯絡資訊
 
-- **GitHub Issues**: [回報問題](https://github.com/yourusername/Taiwan-ICD10-Health-MCP/issues)
+- **GitHub Issues**: [回報問題](https://github.com/audi0417/Taiwan-Health-MCP/issues)
 - **文件**: 參閱 [src/README.md](src/README.md)
 
 ---
