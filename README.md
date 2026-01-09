@@ -102,213 +102,34 @@ docker-compose up -d
 
 ## 🛠️ MCP 工具清單
 
-本服務提供 **32 個 MCP 工具**，分為 10 個群組：
+本服務提供 **32 個 MCP 工具**：
 
-<details>
-<summary><b>Group 1: ICD-10 Tools (4 個)</b></summary>
+| 類別 | 數量 | 功能 |
+| --- | --- | --- |
+| ICD-10 | 4 | 診斷/手術碼搜尋、推論、衝突檢查 |
+| 藥品 | 3 | FDA 藥品查詢、外觀識別 |
+| 健康食品 | 2 | 健康食品查詢、保健分析 |
+| 營養 | 5 | 營養成分、膳食分析 |
+| FHIR 互操作性 | 3 | Condition 資源轉換、驗證 |
+| 檢驗 (LOINC) | 5 | 檢驗碼、參考值、結果判讀 |
+| 臨床指引 | 5 | 指引查詢、診療路徑 |
+| FHIR 藥品 | 4 | Medication 資源轉換 |
+| 綜合分析 | 1 | 疾病與保健整合分析 |
 
-- `search_medical_codes` - 搜尋診斷/手術碼
-- `infer_complications` - 推論疾病併發症
-- `get_nearby_codes` - 查詢鄰近碼（鑑別診斷）
-- `check_medical_conflict` - 檢查診斷與手術碼衝突
-
-</details>
-
-<details>
-<summary><b>Group 2: Drug Tools (3 個)</b></summary>
-
-- `search_drug_info` - 搜尋台灣 FDA 藥品
-- `get_drug_details` - 取得藥品詳細資訊
-- `identify_unknown_pill` - 根據外觀識別藥品
-
-</details>
-
-<details>
-<summary><b>Group 3: Composite Analysis (1 個)</b></summary>
-
-- `analyze_treatment_plan` - 診斷與藥物關聯分析
-
-</details>
-
-<details>
-<summary><b>Group 4: Health Food Tools (2 個)</b></summary>
-
-- `search_health_food` - 搜尋健康食品
-- `get_health_food_details` - 健康食品詳細資訊
-
-</details>
-
-<details>
-<summary><b>Group 5: Nutrition & Dietary Tools (5 個)</b></summary>
-
-- `search_food_nutrition` - 搜尋食品營養資訊
-- `get_detailed_nutrition` - 取得詳細營養成分
-- `search_food_ingredient` - 搜尋食品原料
-- `get_ingredients_by_category` - 依分類查詢原料
-- `analyze_meal_nutrition` - 膳食營養分析
-
-</details>
-
-<details>
-<summary><b>Group 6: Comprehensive Health Analysis (1 個)</b></summary>
-
-- `analyze_health_support_for_condition` - 疾病與保健整合分析
-
-</details>
-
-<details>
-<summary><b>Group 7: FHIR Interoperability Tools (3 個)</b></summary>
-
-- `create_fhir_condition` - 建立 FHIR Condition 資源
-- `create_fhir_condition_from_diagnosis` - 從診斷建立 Condition
-- `validate_fhir_condition` - 驗證 FHIR Condition
-
-</details>
-
-<details>
-<summary><b>Group 8: Laboratory & LOINC Tools (5 個)</b></summary>
-
-- `search_loinc_code` - 搜尋 LOINC 碼
-- `list_lab_categories` - 列出檢驗分類
-- `get_reference_range` - 查詢參考值範圍
-- `interpret_lab_result` - 判讀檢驗結果
-- `batch_interpret_lab_results` - 批次判讀
-
-</details>
-
-<details>
-<summary><b>Group 9: Clinical Guideline Tools (5 個)</b></summary>
-
-- `search_clinical_guideline` - 搜尋臨床指引
-- `get_complete_guideline` - 取得完整指引
-- `get_medication_recommendations` - 取得用藥建議
-- `get_test_recommendations` - 取得檢查建議
-- `get_treatment_goals` - 取得治療目標
-- `suggest_clinical_pathway` - 建議臨床路徑
-
-</details>
-
-<details>
-<summary><b>Group 10: FHIR Medication Tools (4 個)</b></summary>
-
-- `create_fhir_medication` - 建立 FHIR Medication 資源
-- `create_fhir_medication_knowledge` - 建立藥品知識庫
-- `create_fhir_medication_from_name` - 從藥品名稱建立
-- `identify_pill_to_fhir` - 從外觀識別並建立 FHIR
-
-</details>
+詳細工具列表請參閱 [src/README.md](src/README.md) 中的完整說明。
 
 ---
 
-## 💡 使用範例
+## 💡 快速範例
 
-### 範例 1: 完整診療流程
-
-```python
-from src.icd_service import ICDService
-from src.fhir_condition_service import FHIRConditionService
-from src.clinical_guideline_service import ClinicalGuidelineService
-
-# 1. 搜尋診斷
-icd = ICDService('data/icd.xlsx', 'data')
-result = icd.search_codes("糖尿病", type="diagnosis")
-
-# 2. 建立 FHIR Condition
-fhir = FHIRConditionService(icd)
-condition = fhir.create_condition(
-    icd_code="E11.9",
-    patient_id="patient-001",
-    clinical_status="active"
-)
-
-# 3. 查詢臨床指引
-guideline = ClinicalGuidelineService('data')
-pathway = guideline.suggest_clinical_pathway("E11")
-```
-
-### 範例 2: 藥品查詢與 FHIR 轉換
-
-```python
-from src.drug_service import DrugService
-from src.fhir_medication_service import FHIRMedicationService
-
-# 1. 搜尋藥品
-drug = DrugService('data')
-result = drug.search_drugs("普拿疼")
-
-# 2. 建立 FHIR Medication
-fhir_med = FHIRMedicationService(drug)
-medication = fhir_med.create_medication_from_search(
-    keyword="普拿疼",
-    resource_type="Medication"
-)
-```
-
-### 範例 3: 檢驗結果判讀
-
-```python
-from src.lab_service import LabService
-
-lab = LabService('data')
-
-# 判讀單項檢驗
-result = lab.interpret_lab_result(
-    loinc_code="1558-6",  # 空腹血糖
-    value=126,
-    age=50,
-    gender="M"
-)
-
-# 批次判讀
-batch = lab.batch_interpret_results([
-    {"loinc_code": "1558-6", "value": 126},
-    {"loinc_code": "4548-4", "value": 7.2}
-], age=55, gender="M")
-```
+更多範例請參閱 [src/README.md](src/README.md)
 
 ---
 
-## 📚 文件
+## 📚 詳細文件
 
-### 模組實作說明
-- **[src/README.md](src/README.md)** - 完整模組說明（實作方式、輸入輸出、使用範例）
-
-### 測試
-```bash
-# FHIR Medication 測試
-python test_fhir_medication.py
-
-# LOINC 與臨床指引測試
-python test_lab_and_guideline.py
-```
-
----
-
-## 🗂️ 專案架構
-
-```
-Taiwan-ICD10-Health-MCP/
-├── src/
-│   ├── server.py                      # MCP 伺服器（32 tools）
-│   ├── icd_service.py                 # ICD-10 服務
-│   ├── drug_service.py                # 藥品服務
-│   ├── health_food_service.py         # 健康食品服務
-│   ├── food_nutrition_service.py      # 營養服務
-│   ├── lab_service.py                 # LOINC 檢驗服務
-│   ├── clinical_guideline_service.py  # 臨床指引服務
-│   ├── fhir_condition_service.py      # FHIR Condition
-│   ├── fhir_medication_service.py     # FHIR Medication
-│   ├── utils.py                       # 工具函式
-│   └── README.md                      # 模組說明文件 📖
-├── data/
-│   ├── loinc_official/                # LOINC 資料
-│   └── lab_reference_ranges.csv       # 檢驗參考值
-├── scripts/
-│   └── integrate_loinc.py             # LOINC 整合腳本
-├── test_fhir_medication.py            # 測試腳本
-├── test_lab_and_guideline.py          # 測試腳本
-└── README.md                          # 專案說明（本文件）
-```
+- **[src/README.md](src/README.md)** - 完整模組說明、API 參考、使用範例
+- **[docs/](docs/)** - MkDocs 文檔網站（架構、指南、API）
 
 ---
 
@@ -327,70 +148,52 @@ Taiwan-ICD10-Health-MCP/
 
 ---
 
-## 🔄 版本資訊
+## 📦 版本
 
-### v1.1.0 (2024-12-25)
-- ✨ 新增 FHIR Medication Service
-- ✨ 新增 FHIR MedicationKnowledge 支援
-- ✨ 新增 4 個 FHIR Medication MCP 工具
-- 📚 新增完整模組說明文件
-- ⚠️ **FHIR 實現注記**:
-  - FHIR Condition: 核心資源完整，基礎驗證就位
-  - FHIR Medication: 支援 Medication 與 MedicationKnowledge，外觀識別整合
-  - 驗證層級: 適合演示與研究，生產環境需補充完整 FHIR 驗證
+**v1.1.0** - 完整的台灣醫療健康資料整合 MCP 伺服器
 
-### v1.0.0 (2024-12-20)
-- ✨ 初始發布
-- ✨ 8 個核心服務模組
-- ✨ 28 個 MCP 工具
-- ✨ FHIR R4 標準支援
+詳見 Git 提交歷史或 [src/README.md](src/README.md) 了解功能詳情。
 
 ---
 
 ## 🤝 貢獻
 
-歡迎貢獻！請遵循以下步驟：
+歡迎貢獻！詳見 [CONTRIBUTING.md](CONTRIBUTING.md) 了解詳細步驟和方向。
 
-1. Fork 專案
-2. 建立功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交變更 (`git commit -m 'Add AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 開啟 Pull Request
+### 主要貢獻方向
 
-### 貢獻方向
-- 新增更多 LOINC 中文對照
-- 補充臨床診療指引資料
-- 實作更多 FHIR 資源
-- 改善效能與快取機制
+- LOINC 中文對照擴充
+- 臨床指引資料補充
+- FHIR 資源實作
+- 效能優化與快取機制
 
 ---
 
 ## 📝 授權
 
-本專案採用 **MIT License** - 詳見 [LICENSE](LICENSE) 檔案
+**MIT License** - 詳見 [LICENSE](LICENSE) 檔案
 
-### 資料授權
+使用的開放資料和標準：
 - 台灣政府開放資料 - 政府資料開放授權條款
-- LOINC - LOINC License（免費用於臨床、研究）
-- FHIR - HL7 FHIR License
+- LOINC & FHIR & ICD - 免費用於臨床、研究、教育
 
 ---
 
 ## 📞 聯絡資訊
 
 - **GitHub Issues**: [回報問題](https://github.com/audi0417/Taiwan-Health-MCP/issues)
+- **Email**: [support@healthymind-tech.com](mailto:support@healthymind-tech.com)
 - **文件**: 參閱 [src/README.md](src/README.md)
 
 ---
 
 ## 🙏 致謝
 
-感謝以下組織提供開放資料：
-- 🇹🇼 中華民國衛生福利部
-- 🇹🇼 台灣食品藥物管理署 (TFDA)
-- 🌍 Regenstrief Institute (LOINC)
-- 🌍 HL7 International (FHIR)
-- 🌍 World Health Organization (ICD, ATC)
+感謝提供開放資料和標準的組織：
+- 台灣衛福部、TFDA（ICD、藥品、健康食品資料）
+- Regenstrief Institute（LOINC）
+- HL7 International（FHIR）
+- WHO（ICD、ATC）
 
 ---
 

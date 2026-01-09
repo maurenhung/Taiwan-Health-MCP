@@ -339,7 +339,7 @@ docker-compose logs
 
 - 📖 查看 [常見問題](faq/index.md)
 - 💬 開啟 [GitHub Issue](https://github.com/audi0417/Taiwan-Health-MCP/issues)
-- 📧 聯絡維護團隊
+- 📧 聯絡維護團隊: [support@healthymind-tech.com](mailto:support@healthymind-tech.com)
 
 ---
 
