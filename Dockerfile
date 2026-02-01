@@ -1,18 +1,34 @@
 FROM python:3.10-slim
 
-# 1. 設定基礎工作目錄為 /app (用來放置檔案)
+# Set working directory
 WORKDIR /app
 
-# 2. 安裝依賴
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 3. 【關鍵修改】切換工作目錄進入 /app/src
-# 注意：data/ 和 src/ 會在運行時透過 volume mount 掛載，不需要在構建時複製
+# Copy the entire project (data + src)
+# Note: Ensure .dockerignore excludes large files if needed
+COPY . /app
+
+# Set working directory to src for imports
 WORKDIR /app/src
 
-# 6. 設定環境變數
+# Environment variables for HTTP mode
 ENV PYTHONUNBUFFERED=1
+ENV MCP_TRANSPORT=http
+ENV MCP_HOST=0.0.0.0
+ENV MCP_PORT=8000
+ENV MCP_PATH=/mcp
 
-# 7. 【關鍵修改】因為已經在 src 裡面了，指令直接執行 server.py 即可
-ENTRYPOINT ["python", "server.py"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp').read()" || exit 1
+
+# Start the server using the HTTP runner script
+CMD ["python", "run_with_http.py"]

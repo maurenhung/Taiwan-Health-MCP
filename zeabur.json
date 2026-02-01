@@ -1,0 +1,21 @@
+{
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "service": {
+    "port": 8000,
+    "protocol": "http",
+    "healthcheck": {
+      "path": "/mcp",
+      "interval": 30,
+      "timeout": 10
+    }
+  },
+  "variables": {
+    "MCP_TRANSPORT": "http",
+    "MCP_HOST": "0.0.0.0",
+    "MCP_PORT": "8000",
+    "MCP_PATH": "/mcp",
+    "PYTHONUNBUFFERED": "1"
+  }
+}
