@@ -1,11 +1,6 @@
 """
-Entry point for running the MCP server with HTTP/streamable-http transport.
+Entry point for running the MCP server with SSE transport for HTTP deployments.
 Optimized for cloud deployments (Zeabur, Heroku, Railway, etc.)
-
-This script:
-1. Sets up environment variables for HTTP mode
-2. Properly initializes the MCP server
-3. Provides a stable FastAPI/uvicorn HTTP endpoint
 """
 
 import os
@@ -22,10 +17,10 @@ logger = logging.getLogger(__name__)
 # 1. Configure Environment Variables BEFORE importing server
 logger.info("Configuring environment variables...")
 
-# Set transport mode to http (streamable-http)
-os.environ["MCP_TRANSPORT"] = "http"
+# Set transport mode to SSE (Server-Sent Events) for HTTP
+os.environ["MCP_TRANSPORT"] = "sse"
 
-# Map PORT environment variable (common in PaaS platforms)
+# Map PORT environment variable (common in PaaS platforms like Zeabur)
 if "PORT" in os.environ and "MCP_PORT" not in os.environ:
     os.environ["MCP_PORT"] = os.environ["PORT"]
     logger.info(f"Mapped PORT={os.environ['PORT']} to MCP_PORT")
@@ -38,13 +33,8 @@ if "MCP_PORT" not in os.environ:
 if "MCP_HOST" not in os.environ:
     os.environ["MCP_HOST"] = "0.0.0.0"
 
-# Set HTTP path
-if "MCP_PATH" not in os.environ:
-    os.environ["MCP_PATH"] = "/mcp"
-
 logger.info(f"MCP_HOST: {os.environ['MCP_HOST']}")
 logger.info(f"MCP_PORT: {os.environ['MCP_PORT']}")
-logger.info(f"MCP_PATH: {os.environ['MCP_PATH']}")
 
 # 2. Import the MCP server instance
 # Note: server.py will use the env vars set above during import
@@ -65,20 +55,15 @@ if __name__ == "__main__":
     port = int(os.environ.get("MCP_PORT", "8000"))
     
     logger.info("=" * 60)
-    logger.info("🏥 Taiwan Health MCP Server - HTTP Mode")
+    logger.info("🏥 Taiwan Health MCP Server - SSE HTTP Mode")
     logger.info("=" * 60)
     logger.info(f"Starting server on http://{host}:{port}")
-    logger.info(f"MCP endpoint: http://{host}:{port}{os.environ.get('MCP_PATH', '/mcp')}")
     logger.info("=" * 60)
     
     try:
-        # Run with streamable-http transport
-        # For HTTP mode, we need to pass host and port to the run method
-        mcp.run(
-            transport="streamable-http",
-            host=host,
-            port=port
-        )
+        # Run with SSE transport (proper HTTP support)
+        # FastMCP will use environment variables for host/port configuration
+        mcp.run(transport="sse")
     except Exception as e:
         logger.error(f"Server failed to start: {e}")
         import traceback
