@@ -19,16 +19,16 @@ COPY . /app
 # Set working directory to src for imports
 WORKDIR /app/src
 
-# Environment variables for HTTP mode
+# Environment variables for Streamable HTTP mode
 ENV PYTHONUNBUFFERED=1
-ENV MCP_TRANSPORT=http
+ENV MCP_TRANSPORT=streamable-http
 ENV MCP_HOST=0.0.0.0
 ENV MCP_PORT=8000
 ENV MCP_PATH=/mcp
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp').read()" || exit 1
+    CMD python -c "import json, urllib.request; req=urllib.request.Request('http://localhost:8000/mcp', data=json.dumps({'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':'2024-11-05','capabilities':{}}}).encode(), headers={'content-type':'application/json'}); urllib.request.urlopen(req, timeout=5).read()" || exit 1
 
-# Start the server using the HTTP server wrapper
-CMD ["python", "http_server.py"]
+# Start the MCP server directly (Streamable HTTP)
+CMD ["python", "server.py"]

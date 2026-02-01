@@ -51,19 +51,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Store MCP process
-mcp_process = None
-
-@app.on_event("startup")
-async def startup():
-    """Start MCP server on app startup"""
-    global mcp_process
-    logger.info("🚀 Starting Taiwan Health MCP server...")
-    try:
-        # Start MCP with stdio transport
-        await asyncio.to_thread(lambda: mcp.run(transport="stdio"))
-    except Exception as e:
-        logger.warning(f"MCP run method failed: {e}. Continuing with mock mode...")
+# MCP server initialized during import, no need to start separately
 
 @app.get("/")
 async def root():

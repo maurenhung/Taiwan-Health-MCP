@@ -12,7 +12,7 @@
     }
   },
   "variables": {
-    "MCP_TRANSPORT": "http",
+    "MCP_TRANSPORT": "streamable-http",
     "MCP_HOST": "0.0.0.0",
     "MCP_PORT": "8000",
     "MCP_PATH": "/mcp",

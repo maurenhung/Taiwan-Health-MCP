@@ -11,7 +11,7 @@ import os
 from dataclasses import dataclass
 from typing import Literal
 
-TransportType = Literal["stdio", "http", "sse"]
+TransportType = Literal["stdio", "sse", "streamable-http"]
 
 
 @dataclass
@@ -19,7 +19,7 @@ class MCPConfig:
     """MCP Server 配置類別
 
     Attributes:
-        transport: 傳輸模式 (stdio/http/sse)
+        transport: 傳輸模式 (stdio/streamable-http/sse)
         host: 監聽主機
         port: 監聽埠號
         path: HTTP 端點路徑
@@ -44,6 +44,9 @@ class MCPConfig:
             MCPConfig 實例
         """
         transport = os.getenv("MCP_TRANSPORT", "stdio").lower()
+        if transport == "http":
+            # Backward-compat alias for streamable HTTP
+            transport = "streamable-http"
 
         # 驗證 transport 類型
         valid_transports = ("stdio", "sse", "streamable-http")
