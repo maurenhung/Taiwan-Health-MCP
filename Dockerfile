@@ -30,5 +30,5 @@ ENV MCP_PATH=/mcp
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/mcp').read()" || exit 1
 
-# Start the server using the HTTP runner script
-CMD ["python", "run_with_http.py"]
+# Start the server using the HTTP server wrapper
+CMD ["python", "http_server.py"]
