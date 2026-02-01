@@ -73,7 +73,12 @@ if __name__ == "__main__":
     
     try:
         # Run with streamable-http transport
-        mcp.run(transport="streamable-http")
+        # For HTTP mode, we need to pass host and port to the run method
+        mcp.run(
+            transport="streamable-http",
+            host=host,
+            port=port
+        )
     except Exception as e:
         logger.error(f"Server failed to start: {e}")
         import traceback

@@ -18,13 +18,7 @@ from utils import log_error, log_info
 config = MCPConfig.from_env()
 
 # 1. Initialize the MCP Server
-# Pass host and port here, as run() does not accept them in newer versions
-mcp = FastMCP(
-    "taiwanHealthMcp",
-    host=config.host,
-    port=config.port,
-    dependencies=["uvicorn"],
-)
+mcp = FastMCP("taiwanHealthMcp")
 
 # 2. Configure data paths
 # Automatically detect if running in Google Colab or Docker
